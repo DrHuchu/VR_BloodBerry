@@ -45,7 +45,38 @@ public:
 	UStaticMeshComponent* BB_Static_Opened;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
+	UStaticMeshComponent* BB_Static_Closed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
 	UStaticMeshComponent* BB_Static_Clicked;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Main_01;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Main_02;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Main_03;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Main_04;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Receiver_R;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Receiver_L;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Supporter_Release;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
+	UAnimMontage* Supporter_Rotate;
+
+	UFUNCTION(BlueprintCallable)
+	void SetInvisible(USceneComponent* Comp);
+
+	UFUNCTION(BlueprintCallable)
+	void SetVisible(USceneComponent* Comp);
 };
