@@ -2,6 +2,9 @@
 
 
 #include "Bloodberry.h"
+#include "PlayMontageCallbackProxy.h"
+#include "Animation/AnimInstance.h"
+#include "Dataflow/DataflowEngineUtil.h"
 
 // Sets default values
 ABloodberry::ABloodberry()
@@ -70,7 +73,7 @@ void ABloodberry::SetInvisible(USceneComponent* Comp)
 	if(USkeletalMeshComponent* SkeletalComp = Cast<USkeletalMeshComponent>(Comp))
 	{
 		SkeletalComp->SetVisibility(false);
-		SkeletalComp->SetCollisionProfileName(TEXT("NoCollision"));	
+		SkeletalComp->SetCollisionProfileName(TEXT("NoCollision"));
 	}
 	else if(UStaticMeshComponent* StaticComp = Cast<UStaticMeshComponent>(Comp))
 	{
@@ -85,7 +88,7 @@ void ABloodberry::SetVisible(USceneComponent* Comp)
 	if(USkeletalMeshComponent* SkeletalComp = Cast<USkeletalMeshComponent>(Comp))
 	{
 		SkeletalComp->SetVisibility(true); 
-		SkeletalComp->SetCollisionProfileName(TEXT("PhysicsActor"));	
+		SkeletalComp->SetCollisionProfileName(TEXT("PhysicsActor"));
 	}
 	else if(UStaticMeshComponent* StaticComp = Cast<UStaticMeshComponent>(Comp))
 	{
@@ -94,3 +97,20 @@ void ABloodberry::SetVisible(USceneComponent* Comp)
 	}
 }
 
+void ABloodberry::SupporterRelease()
+{
+	// 스태틱 메쉬 안 보이게, 충돌 X
+	SetInvisible(BB_Static_Folded);
+	// 스켈레탈 메쉬 보이게, 충돌 O
+	SetVisible(BB_Main);
+	// 애니메이션 몽타쥬 재생
+	float Main_01_Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_01, 1, EMontagePlayReturnType::Duration);
+
+	FTimerHandle AnimationTimerHandle;
+	GetWorldTimerManager().SetTimer(AnimationTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		SetInvisible(BB_Main);
+		SetVisible(BB_Static_Released);	
+	}), Main_01_Duration, false);	
+	
+}

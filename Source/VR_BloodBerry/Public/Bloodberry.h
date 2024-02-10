@@ -79,4 +79,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetVisible(USceneComponent* Comp);
+	
+	UFUNCTION(BlueprintCallable)
+	void SupporterRelease();
+	
+	//void OnMontageCompleted(UAnimMontage* Montage, bool bInterrupted);
+	//void OnMontageCompleted();
 };
