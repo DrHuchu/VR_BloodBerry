@@ -36,33 +36,21 @@ public:
 	USkeletalMeshComponent* BB_ReceiverCableR;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
-	UStaticMeshComponent* BB_Static_Folded;
+	UStaticMeshComponent* BB_Static;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
-	UStaticMeshComponent* BB_Static_Released;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
-	UStaticMeshComponent* BB_Static_Opened;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
-	UStaticMeshComponent* BB_Static_Closed;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
-	UStaticMeshComponent* BB_Static_Clicked;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BB")
 	UStaticMesh* Static_01;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BB")
 	UStaticMesh* Static_02;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BB")
 	UStaticMesh* Static_03;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BB")
 	UStaticMesh* Static_04;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BB")
 	UStaticMesh* Static_05;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
