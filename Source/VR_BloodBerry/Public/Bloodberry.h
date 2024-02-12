@@ -50,6 +50,21 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "BB")
 	UStaticMeshComponent* BB_Static_Clicked;
 
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Static_01;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Static_02;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Static_03;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Static_04;
+
+	UPROPERTY(EditAnywhere)
+	UStaticMesh* Static_05;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	UAnimMontage* Main_01;
 
@@ -79,10 +94,53 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetVisible(USceneComponent* Comp);
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	bool bIsPlaying;
+
+	// 서포터 릴리즈 애니메이션 관련
 	
 	UFUNCTION(BlueprintCallable)
 	void SupporterRelease();
+
+	FTimerHandle AnimationTimerHandle;
 	
-	//void OnMontageCompleted(UAnimMontage* Montage, bool bInterrupted);
-	//void OnMontageCompleted();
+	UFUNCTION(BLueprintCallable)
+	void SupporterUnrelease();
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	bool bSupporterReleased;
+
+	// 리시버 릴리즈 애니메이션 관련
+	
+	UFUNCTION(BlueprintCallable)
+	void ReceiverRelease();
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	bool bReceiverReleased;
+
+	UFUNCTION(BlueprintCallable)
+	void ReceiverUnrelease();
+
+	// 커버 오픈 애니메이션 관련
+
+	UFUNCTION(BlueprintCallable)
+	void CoverOpen();
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	bool bCoverOpened;
+
+	UFUNCTION(BlueprintCallable)
+	void CoverClose();
+
+	// 스위치 클릭 애니메이션 관련
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchClick();
+
+	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	bool bSwitchClicked;
+
+	UFUNCTION(BlueprintCallable)
+	void SwitchUnclick();
 };
