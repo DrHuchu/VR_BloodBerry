@@ -7,6 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "RepMovementNetSerializer.h"
+#include "SWarningOrErrorBox.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/LocalPlayer.h"
 
@@ -97,6 +99,8 @@ void AVR_DefaultPawn::BeginPlay()
 void AVR_DefaultPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
 
 // Called to bind functionality to input
@@ -138,4 +142,75 @@ void AVR_DefaultPawn::Calibrate()
 	//위치 재정의
 	//UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition(0, EOrientPositionSelector::OrientationAndPosition);
 }
+
+bool AVR_DefaultPawn::IsSwingingL(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle,
+	float ThresholdSpeed)
+{
+	FVector Movement = CurrentLocation - PreviousControllerLocationL;
+	FRotator RotationDelta = CurrentRotation - PreviousControllerRotationL;
+
+	if(Movement.Size() >= ThresholdSpeed && FMath::Abs(RotationDelta.Yaw) <= ThresholdAngle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UpdateL"));
+		return true;
+	}
+	
+	return false;
+}
+
+bool AVR_DefaultPawn::IsSwingingR(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle,
+	float ThresholdSpeed)
+{
+	FVector Movement = CurrentLocation - PreviousControllerLocationR;
+	FRotator RotationDelta = CurrentRotation - PreviousControllerRotationR;
+
+	UE_LOG(LogTemp, Warning, TEXT("Swing Check R"));
+	UE_LOG(LogTemp, Warning, TEXT("Movement : %f"), Movement.Size());
+	UE_LOG(LogTemp, Warning, TEXT("Rotation : %f"), FMath::Abs(RotationDelta.Yaw));
+
+	if(Movement.Size() >= ThresholdSpeed && FMath :: Abs(RotationDelta.Yaw) <= ThresholdAngle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UpdateR"));
+		return true;
+	}
+	
+	return false;
+}
+
+void AVR_DefaultPawn::UpdateVRControllerL()
+{
+	FVector CurrentControllerLocation = LeftHand->GetComponentLocation();
+	FRotator CurrentControllerRotation = LeftHand->GetComponentRotation();
+
+	bool bIsSwinging = IsSwingingL(CurrentControllerLocation, CurrentControllerRotation, 1.0f, 2.0f);
+	
+	if(bWasSwingingL && !bIsSwinging)
+	{
+		ControllerStopped();
+	}
+
+	PreviousControllerLocationL = CurrentControllerLocation;
+	PreviousControllerRotationL = CurrentControllerRotation;
+
+	bWasSwingingL = bIsSwinging;
+}
+
+void AVR_DefaultPawn::UpdateVRControllerR()
+{
+	FVector CurrentControllerLocation = RightHand->GetComponentLocation();
+	FRotator CurrentControllerRotation = RightHand->GetComponentRotation();
+	
+	bool bIsSwinging = IsSwingingR(CurrentControllerLocation, CurrentControllerRotation, 1.0f, 2.0f);
+
+	if(bWasSwingingR && !bIsSwinging)
+	{
+		ControllerStopped();
+	}
+
+	PreviousControllerLocationR = CurrentControllerLocation;
+	PreviousControllerRotationR = CurrentControllerRotation;
+
+	bWasSwingingR = bIsSwinging;
+}
+
 

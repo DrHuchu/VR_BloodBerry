@@ -85,6 +85,31 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	float SnapTurnDegree = -45.0f;
+
+	// 모션컨트롤러 추적
+	FVector PreviousControllerLocationL;
+	FRotator PreviousControllerRotationL;
+	
+	FVector PreviousControllerLocationR;
+	FRotator PreviousControllerRotationR;
+
+	UFUNCTION()
+	bool IsSwingingL(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle, float ThresholdSpeed);
+
+	UFUNCTION()
+	bool IsSwingingR(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle, float ThresholdSpeed);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVRControllerL();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVRControllerR();
+
+	bool bWasSwingingL = false;
+	bool bWasSwingingR = false;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ControllerStopped();
 	
 protected:
 	//카메라

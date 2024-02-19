@@ -119,7 +119,7 @@ public:
 	UFUNCTION(BLueprintCallable)
 	void SupporterUnrelease();
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Anim")
 	bool bSupporterReleased;
 
 	// 리시버 릴리즈 애니메이션 관련
@@ -127,7 +127,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ReceiverRelease();
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Anim")
 	bool bReceiverReleased;
 
 	UFUNCTION(BlueprintCallable)
@@ -138,7 +138,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CoverOpen();
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Anim")
 	bool bCoverOpened;
 
 	UFUNCTION(BlueprintCallable)
@@ -149,9 +149,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwitchClick();
 
-	UPROPERTY(VisibleAnywhere, Category = "Anim")
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Anim")
 	bool bSwitchClicked;
 
 	UFUNCTION(BlueprintCallable)
 	void SwitchUnclick();
+
+	// 속도 / 각도 추적
+	FVector PreviousLocation;
+	FRotator PreviousRotation;
+
+	UFUNCTION()
+	bool IsSwinging(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle, float ThresholdSpeed);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVRController();
+
+	bool bWasSwinging = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsGrabbed;
 };

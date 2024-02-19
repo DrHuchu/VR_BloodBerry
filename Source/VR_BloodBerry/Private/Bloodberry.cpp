@@ -74,7 +74,7 @@ void ABloodberry::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	Timeline.TickTimeline(DeltaTime);
-	UE_LOG(LogTemp, Warning, TEXT("%f!"), BladeLength);
+	//UE_LOG(LogTemp, Warning, TEXT("%f!"), BladeLength);
 }
 
 
@@ -319,3 +319,34 @@ void ABloodberry::SwitchUnclick()
 	
 }
 
+bool ABloodberry::IsSwinging(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle,
+	float ThresholdSpeed)
+{
+	FVector Movement = CurrentLocation - PreviousLocation;
+	FRotator RotationDelta = CurrentRotation - PreviousRotation;
+
+	if(Movement.Size() >= ThresholdSpeed && FMath::Abs(RotationDelta.Yaw) <= ThresholdAngle)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+void ABloodberry::UpdateVRController()
+{
+	FVector CurrentLocation = GetActorLocation();
+	FRotator CurrentRotation = GetActorRotation();
+
+	bool bIsSwinging = IsSwinging(CurrentLocation, CurrentRotation, 1.0f, 2.0f);
+
+	if(bWasSwinging && !bIsSwinging)
+	{
+		SupporterRelease();
+	}
+
+	PreviousLocation = CurrentLocation;
+	PreviousRotation = CurrentRotation;
+
+	bWasSwinging = bIsSwinging;
+}
