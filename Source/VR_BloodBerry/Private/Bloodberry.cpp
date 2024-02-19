@@ -2,9 +2,9 @@
 
 
 #include "Bloodberry.h"
-#include "PlayMontageCallbackProxy.h"
 #include "Animation/AnimInstance.h"
-#include "Dataflow/DataflowEngineUtil.h"
+#include "NiagaraComponent.h"
+#include "Components/TimelineComponent.h"
 
 // Sets default values
 ABloodberry::ABloodberry()
@@ -32,21 +32,51 @@ ABloodberry::ABloodberry()
 	BB_ReceiverCableR = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ReceiverCable_R"));
 	BB_ReceiverCableR->SetupAttachment(RootComponent);
 	BB_ReceiverCableR->SetCollisionProfileName(TEXT("NoCollision"));
+
+	NI_Beam = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Beam"));
+	NI_Beam->SetupAttachment(RootComponent);
+	NI_Beam->SetRelativeLocation(FVector(0,0, 26.0f));
 }
 
 // Called when the game starts or when spawned
 void ABloodberry::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &ABloodberry::BladeOn);
+		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+
+		// UpdateFloat.BindDynamic(this, &ABloodberry::BladeOn);
+		// if(CurveFloat)
+		// {
+		// 	TimelineComp->AddInterpFloat(CurveFloat, UpdateFloat);
+		// }
+	}
 	
+	NI_Beam->SetVisibility(false);
+	NI_Beam->SetNiagaraVariableFloat(FString(TEXT("BladeLength")), 0);
+
+	//TimelineComp->Play();
+	//NI_Beam->Deactivate();
+}
+
+void ABloodberry::BladeOn(float Value)
+{
+	BladeLength = Value;
+	NI_Beam->SetNiagaraVariableFloat(FString(TEXT("BladeLength")), BladeLength);
 }
 
 // Called every frame
 void ABloodberry::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	Timeline.TickTimeline(DeltaTime);
+	UE_LOG(LogTemp, Warning, TEXT("%f!"), BladeLength);
 }
+
 
 void ABloodberry::SetInvisible(USceneComponent* Comp)
 {
@@ -237,6 +267,11 @@ void ABloodberry::SwitchClick()
 	SetInvisible(BB_Static);
 	SetVisible(BB_Main);
 
+	NI_Beam->SetVisibility(true);
+	//NI_Beam->Activate();
+	// 빔 블레이드 나이아가라 Z 스케일값 늘리기
+	Timeline.Play();
+
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_04, 1, EMontagePlayReturnType::Duration, 0);
 
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
@@ -248,6 +283,7 @@ void ABloodberry::SwitchClick()
 		bSwitchClicked = true;
 		bIsPlaying = false;
 	}), Duration, false);
+	
 }
 
 void ABloodberry::SwitchUnclick()
@@ -270,5 +306,16 @@ void ABloodberry::SwitchUnclick()
 		bSwitchClicked = false;
 		bIsPlaying = false;
 	}), Duration * -1, false);
+
+	// 빔 블레이드 나이아가라 Z 스케일값 줄이기
+	Timeline.Reverse();
+
+	GetWorldTimerManager().ClearTimer(BeamTimerHandle);
+	GetWorldTimerManager().SetTimer(BeamTimerHandle, FTimerDelegate::CreateLambda([&]()
+	{
+		NI_Beam->SetVisibility(false);
+		//NI_Beam->Deactivate();
+	}), 0.3f, false);
+	
 }
 

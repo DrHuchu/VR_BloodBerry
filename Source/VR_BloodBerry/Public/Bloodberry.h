@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraComponent.h"
+#include "Components/TimelineComponent.h"
 #include "Bloodberry.generated.h"
 
 UCLASS()
@@ -76,6 +78,27 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Anim")
 	UAnimMontage* Supporter_Rotate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Beam")
+	UNiagaraComponent* NI_Beam;
+
+	UPROPERTY()
+	FTimeline Timeline;
+
+	UPROPERTY(VisibleAnywhere, Category = "Beam")
+	UTimelineComponent* TimelineComp;
+	
+	UPROPERTY(EditAnywhere, Category = "Beam")
+	UCurveFloat* CurveFloat;
+
+	FOnTimelineFloat UpdateFloat;
+
+	FTimerHandle BeamTimerHandle;
+
+	UFUNCTION()
+	void BladeOn(float Value);
+
+	float BladeLength;
 
 	UFUNCTION(BlueprintCallable)
 	void SetInvisible(USceneComponent* Comp);
