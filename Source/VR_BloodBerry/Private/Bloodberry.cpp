@@ -4,6 +4,9 @@
 #include "Bloodberry.h"
 #include "Animation/AnimInstance.h"
 #include "NiagaraComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
+#include "GameFramework/PlayerController.h"
 #include "Components/TimelineComponent.h"
 
 // Sets default values
@@ -36,6 +39,9 @@ ABloodberry::ABloodberry()
 	NI_Beam = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Beam"));
 	NI_Beam->SetupAttachment(RootComponent);
 	NI_Beam->SetRelativeLocation(FVector(0,0, 26.0f));
+
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComp"));
+	AudioComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -98,12 +104,12 @@ void ABloodberry::SetVisible(USceneComponent* Comp)
 	if(USkeletalMeshComponent* SkeletalComp = Cast<USkeletalMeshComponent>(Comp))
 	{
 		SkeletalComp->SetVisibility(true); 
-		SkeletalComp->SetCollisionProfileName(TEXT("PhysicsActor"));
+		SkeletalComp->SetCollisionProfileName(TEXT("PhysicsGrabbed"));
 	}
 	else if(UStaticMeshComponent* StaticComp = Cast<UStaticMeshComponent>(Comp))
 	{
 		StaticComp->SetVisibility(true);
-		StaticComp->SetCollisionProfileName(TEXT("PhysicsActor"));
+		StaticComp->SetCollisionProfileName(TEXT("PhysicsGrabbed"));
 	}
 }
 
@@ -122,6 +128,11 @@ void ABloodberry::SupporterRelease()
 	// 메인 애니메이션 몽타쥬 재생
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_01, 1, EMontagePlayReturnType::Duration);
 	BB_SupporterCable->GetAnimInstance()->Montage_Play(Supporter_Release, 1);
+
+	// 사운드 재생
+	AudioComp->SetSound(S_Supporter_Release);
+	AudioComp->Play();
+	
 	// 애니메이션 몽타쥬의 재생시간만큼 딜레이 부여
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
 	GetWorldTimerManager().SetTimer(AnimationTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -148,6 +159,11 @@ void ABloodberry::SupporterUnrelease()
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_01, -1, EMontagePlayReturnType::Duration, 1);
 	BB_SupporterCable->GetAnimInstance()->Montage_Play(Supporter_Release,-1, EMontagePlayReturnType::Duration, 1);
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
+
+	// 사운드 재생
+	AudioComp->SetSound(S_Supporter_Release);
+	AudioComp->Play();
+	
 	// 애니메이션 몽타쥬 역재생이라 Duration 값에 -1을 곱해줘야 타이머 사용 가능
 	GetWorldTimerManager().SetTimer(AnimationTimerHandle, FTimerDelegate::CreateLambda([&]()
 	{
@@ -173,6 +189,10 @@ void ABloodberry::ReceiverRelease()
 	BB_SupporterCable->GetAnimInstance()->Montage_Play(Supporter_Rotate, 1);
 	BB_ReceiverCableL->GetAnimInstance()->Montage_Play(Receiver_L, 1);
 	BB_ReceiverCableR->GetAnimInstance()->Montage_Play(Receiver_R, 1);
+
+	// 사운드 재생
+	AudioComp->SetSound(S_Receiver_Release);
+	AudioComp->Play();
 	
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
 	GetWorldTimerManager().SetTimer(AnimationTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -199,6 +219,10 @@ void ABloodberry::ReceiverUnrelease()
 	BB_SupporterCable->GetAnimInstance()->Montage_Play(Supporter_Rotate, -1, EMontagePlayReturnType::Duration, 1);
 	BB_ReceiverCableL->GetAnimInstance()->Montage_Play(Receiver_L, -1, EMontagePlayReturnType::Duration, 1);
 	BB_ReceiverCableR->GetAnimInstance()->Montage_Play(Receiver_R, -1, EMontagePlayReturnType::Duration, 1);
+
+	// 사운드 재생
+	AudioComp->SetSound(S_Receiver_Unrelease);
+	AudioComp->Play();
 	
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
 	GetWorldTimerManager().SetTimer(AnimationTimerHandle, FTimerDelegate::CreateLambda([&]()
@@ -257,11 +281,11 @@ void ABloodberry::CoverClose()
 	}), Duration * -1, false);
 }
 
-void ABloodberry::SwitchClick()
+bool ABloodberry::SwitchClick()
 {
 	if(!bSupporterReleased || !bReceiverReleased || !bCoverOpened || bSwitchClicked || bIsPlaying)
 	{
-		return;
+		return false;
 	}
 	bIsPlaying = true;
 	SetInvisible(BB_Static);
@@ -271,6 +295,7 @@ void ABloodberry::SwitchClick()
 	//NI_Beam->Activate();
 	// 빔 블레이드 나이아가라 Z 스케일값 늘리기
 	Timeline.Play();
+	
 
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_04, 1, EMontagePlayReturnType::Duration, 0);
 
@@ -283,14 +308,15 @@ void ABloodberry::SwitchClick()
 		bSwitchClicked = true;
 		bIsPlaying = false;
 	}), Duration, false);
-	
+
+	return true;
 }
 
-void ABloodberry::SwitchUnclick()
+bool ABloodberry::SwitchUnclick()
 {
 	if(!bSupporterReleased || !bReceiverReleased || !bCoverOpened || !bSwitchClicked || bIsPlaying)
 	{
-		return;
+		return false;
 	}
 	bIsPlaying = true;
 	SetInvisible(BB_Static);
@@ -316,7 +342,8 @@ void ABloodberry::SwitchUnclick()
 		NI_Beam->SetVisibility(false);
 		//NI_Beam->Deactivate();
 	}), 0.3f, false);
-	
+
+	return true;
 }
 
 bool ABloodberry::IsSwinging(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle,
@@ -338,7 +365,7 @@ void ABloodberry::UpdateVRController()
 	FVector CurrentLocation = GetActorLocation();
 	FRotator CurrentRotation = GetActorRotation();
 
-	bool bIsSwinging = IsSwinging(CurrentLocation, CurrentRotation, 1.0f, 2.0f);
+	bool bIsSwinging = IsSwinging(CurrentLocation, CurrentRotation, 1.0f, 4.0f);
 
 	if(bWasSwinging && !bIsSwinging)
 	{
@@ -349,4 +376,15 @@ void ABloodberry::UpdateVRController()
 	PreviousRotation = CurrentRotation;
 
 	bWasSwinging = bIsSwinging;
+}
+
+float ABloodberry::UpdateVRSpeed()
+{
+	FVector CurrentLocation = GetActorLocation();
+
+	FVector Movement = CurrentLocation - PreviousLocation;
+
+	PreviousLocation = CurrentLocation;
+
+	return Movement.Size();
 }

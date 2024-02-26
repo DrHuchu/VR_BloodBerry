@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "NiagaraComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Haptics/HapticFeedbackEffect_Curve.h"
+#include "Haptics/HapticFeedbackEffect_SoundWave.h"
 #include "Bloodberry.generated.h"
 
 UCLASS()
@@ -147,13 +149,13 @@ public:
 	// 스위치 클릭 애니메이션 관련
 
 	UFUNCTION(BlueprintCallable)
-	void SwitchClick();
+	bool SwitchClick();
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "Anim")
 	bool bSwitchClicked;
 
 	UFUNCTION(BlueprintCallable)
-	void SwitchUnclick();
+	bool SwitchUnclick();
 
 	// 속도 / 각도 추적
 	FVector PreviousLocation;
@@ -169,4 +171,39 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsGrabbed;
+
+	UFUNCTION(BlueprintCallable)
+	float UpdateVRSpeed();
+
+	// 사운드 관련
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	UAudioComponent* AudioComp;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_TurnOn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_TurnOff;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_Running;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_Supporter_Release;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_Receiver_Release;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+	USoundBase* S_Receiver_Unrelease;
+	
+	// 햅틱 관련
+	UPROPERTY(EditAnywhere, Category = "Haptic")
+	UHapticFeedbackEffect_Curve* H_TurnOn;
+
+	UPROPERTY(EditAnywhere, Category = "Haptic")
+	UHapticFeedbackEffect_Curve* H_TurnOff;
+
+	UPROPERTY(EditAnywhere, Category = "Haptic")
+	UHapticFeedbackEffect_Curve* H_Running;
 };

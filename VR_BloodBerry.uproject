@@ -9,11 +9,37 @@
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"CoreUObject"
 			]
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "OculusXRHaptics",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Android"
+			]
+		},
+		{
+			"Name": "OculusXR",
+			"Enabled": false,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/8313d8d7e7cf4e03a33e79eb757bccba",
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Android"
+			]
+		},
+		{
+			"Name": "WaveformEditor",
+			"Enabled": true
+		},
+		{
+			"Name": "UdpMessaging",
+			"Enabled": false
+		},
 		{
 			"Name": "OpenXR",
 			"Enabled": true,
@@ -24,7 +50,7 @@
 			]
 		},
 		{
-			"Name": "OpenXREyeTracker",
+			"Name": "OpenXRHandTracking",
 			"Enabled": true,
 			"SupportedTargetPlatforms": [
 				"Win64",
@@ -33,7 +59,7 @@
 			]
 		},
 		{
-			"Name": "OpenXRHandTracking",
+			"Name": "OpenXREyeTracker",
 			"Enabled": true,
 			"SupportedTargetPlatforms": [
 				"Win64",
