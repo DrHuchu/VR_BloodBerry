@@ -295,7 +295,8 @@ bool ABloodberry::SwitchClick()
 	//NI_Beam->Activate();
 	// 빔 블레이드 나이아가라 Z 스케일값 늘리기
 	Timeline.Play();
-	
+
+	bSwitchClicked = true;
 
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_04, 1, EMontagePlayReturnType::Duration, 0);
 
@@ -305,7 +306,6 @@ bool ABloodberry::SwitchClick()
 		SetInvisible(BB_Main);
 		BB_Static->SetStaticMesh(Static_05);
 		SetVisible(BB_Static);
-		bSwitchClicked = true;
 		bIsPlaying = false;
 	}), Duration, false);
 
@@ -321,6 +321,7 @@ bool ABloodberry::SwitchUnclick()
 	bIsPlaying = true;
 	SetInvisible(BB_Static);
 	SetVisible(BB_Main);
+	bSwitchClicked = false;
 
 	float Duration = BB_Main->GetAnimInstance()->Montage_Play(Main_04, -1, EMontagePlayReturnType::Duration, 1);
 	GetWorldTimerManager().ClearTimer(AnimationTimerHandle);
@@ -329,7 +330,6 @@ bool ABloodberry::SwitchUnclick()
 		SetInvisible(BB_Main);
 		BB_Static->SetStaticMesh(Static_04);
 		SetVisible(BB_Static);
-		bSwitchClicked = false;
 		bIsPlaying = false;
 	}), Duration * -1, false);
 
