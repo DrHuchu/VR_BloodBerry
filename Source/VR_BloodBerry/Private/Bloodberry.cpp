@@ -378,11 +378,15 @@ void ABloodberry::UpdateVRController()
 	bWasSwinging = bIsSwinging;
 }
 
-float ABloodberry::UpdateVRSpeed()
+float ABloodberry::UpdateVRSpeed(FVector& PrevLoc, FVector& CurLoc)
 {
 	FVector CurrentLocation = GetActorLocation();
-
+	CurLoc = CurrentLocation;
+	PrevLoc = PreviousLocation;
+	
 	FVector Movement = CurrentLocation - PreviousLocation;
+
+	SliceDirection = PreviousLocation - CurrentLocation;
 
 	PreviousLocation = CurrentLocation;
 

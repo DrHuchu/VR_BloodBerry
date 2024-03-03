@@ -161,6 +161,9 @@ public:
 	FVector PreviousLocation;
 	FRotator PreviousRotation;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Vector")
+	FVector SliceDirection;
+
 	UFUNCTION()
 	bool IsSwinging(FVector CurrentLocation, FRotator CurrentRotation, float ThresholdAngle, float ThresholdSpeed);
 
@@ -173,7 +176,7 @@ public:
 	bool bIsGrabbed;
 
 	UFUNCTION(BlueprintCallable)
-	float UpdateVRSpeed();
+	float UpdateVRSpeed(FVector& PrevLoc, FVector& CurLoc);
 
 	// 사운드 관련
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
